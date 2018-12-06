@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+.DS_Store
 build/
 develop-eggs/
 dist/
@@ -105,3 +106,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+music/
+.DS_Store
