@@ -6,24 +6,18 @@ from keras.layers.core import Dense
 from keras.layers import BatchNormalization, Dropout
 import os
 
-from benchmark.processor import AudioProcessor
-
 class MLP(object):
 
     ''' Instantiate MLP with Keras'''
 
-    def __init__(self,dataset,path,epochs=50, batch_size=500, init_lr=5e-4):
+    def __init__(self,X_train,X_test,Y_train,Y_test,dataset,path,epochs=50, batch_size=500, init_lr=5e-4):
 
-        processor = AudioProcessor(dataset,path)
-        X_train, X_test, self.Y_train, self.Y_test = processor.get_split_dataset()
-        self.X_train, self.X_test = processor.scale_dataset(X_train, X_test)
+        self.X_train = X_train
+        self.X_test = X_test
+        self.Y_train = Y_train
+        self.Y_test = Y_test
 
-        print('init MLPs for {0} dataset'.format(dataset))
-
-        self.categories = processor.inputs_le.inverse_transform(range(0,25))
-        print('Classes :  {0}'.format(self.categories))
-
-        self.num_classes = len(self.categories)
+        self.num_classes = 25
         self.num_features = self.X_train.shape[1]
         self.epochs = epochs
         self.batch_size = batch_size
@@ -153,6 +147,7 @@ class MLP(object):
     def predict_deep_model(self):
         y_predict = self.deep_model.predict(self.X_test)
         return y_predict
+
 
         
 
