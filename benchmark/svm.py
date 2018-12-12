@@ -1,11 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from keras.optimizers import Adam
-from keras.models import Sequential, load_model
-from keras.layers.core import Dense
-from keras.layers import BatchNormalization, Dropout
 import os
-
+from sklearn.svm import SVC
 
 class SVM(object):
 
@@ -18,134 +14,51 @@ class SVM(object):
 
         self.num_classes = 25
         self.num_features = self.X_train.shape[1]
-        self.epochs = epochs
-        self.batch_size = batch_size
-        self.init_lr = init_lr
 
         self.dataset = dataset
         self.path = path
 
-        if os.path.exists('{0}/ModelsMLP/deepMLP{1}.hdf5'.format(self.path, self.dataset)):
-            print('[INFO] loading deep model')
-            self.deep_model = self.load_deep_model()
+        if os.path.exists('{0}/ModelsSVM/SVM{1}.hdf5'.format(self.path, self.dataset)):
+            print('[INFO] loading svm model')
+            self.deep_model = self.load_svm_model()
 
-        if os.path.exists('{0}/ModelsMLP/wideMLP{1}.hdf5'.format(self.path, self.dataset)):
-            print('[INFO] loading wide model')
-            self.wide_model = self.load_wide_model()
+    def createSVMModel(self):
 
-    def createWideModel(self):
-
-        plots = True
-        wideModel = self._wideMLP(self.num_classes)
-        wideModel.compile(optimizer=Adam(lr=self.init_lr, decay=self.init_lr / self.epochs),
-                          loss='categorical_crossentropy', metrics=['accuracy'])
-        print("[INFO] training wide model on {0} dataset".format(self.dataset))
-        wideH = wideModel.fit(self.X_train, self.Y_train, epochs=self.epochs, batch_size=self.batch_size,
-                              validation_data=(self.X_test, self.Y_test), verbose=0)
-        wideModel.save('{0}/ModelsMLP/wideMLP{1}.hdf5'.format(self.path, self.dataset))
-
-        if plots:
-            plt.style.use("ggplot")
-            plt.figure()
-            plt.plot(np.arange(0, self.epochs), wideH.history["loss"], label="train_loss")
-            plt.plot(np.arange(0, self.epochs), wideH.history["val_loss"], label="val_loss")
-            plt.plot(np.arange(0, self.epochs), wideH.history["acc"], label="train_acc")
-            plt.plot(np.arange(0, self.epochs), wideH.history["val_acc"], label="val_acc")
-            plt.title("Training Loss and Accuracy on " + self.dataset)
-            plt.xlabel("Epoch #")
-            plt.ylabel("Loss/Accuracy")
-            plt.legend(loc="lower left")
-            plt.savefig('{0}/GraphsMLP/wideMLP{1}.png'.format(self.path, self.dataset))
-        self.wide_model = wideModel
-        return wideH.history["val_acc"][-1]
-
-    def createDeepModel(self):
-
-        plots = True
-        deepModel = self._deepMLP(self.num_classes)
-        deepModel.compile(optimizer=Adam(lr=self.init_lr, decay=self.init_lr / self.epochs),
-                          loss='categorical_crossentropy', metrics=['accuracy'])
-        print("[INFO] training deep model on {0} dataset".format(self.dataset))
-        deepH = deepModel.fit(self.X_train, self.Y_train, epochs=self.epochs, batch_size=self.batch_size,
-                              validation_data=(self.X_test, self.Y_test), verbose=0)
-        deepModel.save('{0}/ModelsMLP/deepMLP{1}.hdf5'.format(self.path, self.dataset))
-
-        if plots:
-            plt.style.use("ggplot")
-            plt.figure()
-            plt.plot(np.arange(0, self.epochs), deepH.history["loss"], label="train_loss")
-            plt.plot(np.arange(0, self.epochs), deepH.history["val_loss"], label="val_loss")
-            plt.plot(np.arange(0, self.epochs), deepH.history["acc"], label="train_acc")
-            plt.plot(np.arange(0, self.epochs), deepH.history["val_acc"], label="val_acc")
-            plt.title("Training Loss and Accuracy on " + self.dataset)
-            plt.xlabel("Epoch #")
-            plt.ylabel("Loss/Accuracy")
-            plt.legend(loc="lower left")
-            plt.savefig('{0}/GraphsMLP/deepMLP{1}.png'.format(self.path, self.dataset))
-
-        self.deep_model = deepModel
-        return deepH.history["val_acc"][-1]
-
-    @staticmethod
-    def _wideMLP(num_classes):
-        n_hidden_1 = 200  # 1st layer number of neurons
-        n_hidden_2 = 75  # 2nd layer number of neurons
-
-        model = Sequential()
-        model.add(Dense(n_hidden_1, activation='relu'))
-        model.add(BatchNormalization())
-        model.add(Dropout(0.2))
-
-        model.add(Dense(n_hidden_2, activation='relu'))
-        model.add(BatchNormalization())
-        model.add(Dropout(0.2))
-
-        model.add(Dense(num_classes, activation='softmax'))
-
-        return model
-
-    @staticmethod
-    def _deepMLP(num_classes):
-
-        n_hidden_1 = 100  # 1st layer number of neurons
-        n_hidden_2 = 75  # 2nd layer number of neurons
-        n_hidden_3 = 50  # 3rd layer number of neurons
-        n_hidden_4 = 30  # 3rd layer number of neurons
-
-        model = Sequential()
-        model.add(Dense(n_hidden_1, activation='relu'))
-        model.add(BatchNormalization())
-        model.add(Dropout(0.2))
-
-        model.add(Dense(n_hidden_2, activation='relu'))
-        model.add(BatchNormalization())
-        model.add(Dropout(0.2))
-
-        model.add(Dense(n_hidden_3, activation='relu'))
-        model.add(BatchNormalization())
-        model.add(Dropout(0.2))
-
-        model.add(Dense(n_hidden_4, activation='relu'))
-        model.add(BatchNormalization())
-        model.add(Dropout(0.2))
-
-        model.add(Dense(num_classes, activation='softmax'))
-
-        return model
+        clf.save('{0}/ModelsMLP/deepMLP{1}.hdf5'.format(self.path, self.dataset))
+        return
 
     def _load_model(self, type):
-        return load_model('{0}/ModelsMLP/{1}MLP{2}.hdf5'.format(self.path, type, self.dataset))
+        return load_model('{0}/ModelsSVM/{1}MLP{2}.hdf5'.format(self.path, type, self.dataset))
 
-    def load_deep_model(self):
+    def load_svm_model(self):
         return self._load_model('deep')
 
-    def load_wide_model(self):
-        return self._load_model('wide')
-
-    def predict_wide_model(self):
-        y_predict = self.wide_model.predict(self.X_test)
-        return y_predict
-
-    def predict_deep_model(self):
+    def predict_svm_model(self):
         y_predict = self.deep_model.predict(self.X_test)
         return y_predict
+
+    def _grid_search(self,model,param_grid,default_params,X_train, y_train):
+
+        model_name = model.__name__
+        self.logger.info('{0} GRID search for : {1} '.format(time.strftime("%Y%m%d:%H:%M:%S"), model_name))
+
+        # add default paramaters for each model
+        grid_search = GridSearchCV(estimator=model(), param_grid=param_grid, cv=self.tscv.split(X_train), n_jobs=6,verbose=4,scoring='f1_macro')
+        grid_search.fit(X_train, y_train)
+
+        self.logger.info('{0} Best parameters set found on training set: '.format(time.strftime("%Y%m%d:%H:%M:%S")))
+        self.logger.info('{0} {1}'.format(time.strftime("%Y%m%d:%H:%M:%S"),grid_search.best_params_))
+        self.logger.info('Grid scores on training set:'.format(time.strftime("%Y%m%d:%H:%M:%S"), grid_search.best_params_))
+
+        means = grid_search.cv_results_['mean_test_score']
+        stds = grid_search.cv_results_['std_test_score']
+
+        for mean, std, params in zip(means, stds, grid_search.cv_results_['params']):
+            self.logger.info("%0.3f (+/-%0.03f) for %r"% (mean, std * 2, params))
+
+        #res=pd.DataFrame([[model_name,grid_search.best_params_]],columns=['model','best_params'])
+        res= grid_search.best_params_
+
+        #self.best_params[model_name] = grid_search.best_params_
+
+        return res
