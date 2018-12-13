@@ -64,12 +64,13 @@ class AudioProcessor(object):
 
         return df
 
-    def get_split_dataset(self):
+    def get_split_dataset(self,categorical=True):
 
         df = self._get_feature_vectors()
 
         labels = self.inputs_le.fit_transform(df['class'].values)
-        labels = to_categorical(labels, num_classes=df['class'].nunique())
+        if categorical:
+            labels = to_categorical(labels, num_classes=df['class'].nunique())
 
         features = np.asarray(df.values[:, 2:-1])
         track_ids = df.TRACKID.values

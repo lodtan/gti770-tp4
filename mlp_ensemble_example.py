@@ -34,7 +34,6 @@ benchmark_results =  pd.DataFrame(columns=['Model', 'Features','accuracy','f1_ma
 #         y_pred =  np.argmax(y_pred, axis=1)
 #         CM = confusion_matrix(y_test, y_pred)
 #         print(CM)
-#         categories = processor.inputs_le.inverse_transform(range(0, 25))
 #         plot_confusion_matrix(CM, categories,normalize=True,title='Confusion matrix',cmap=plt.cm.Blues)
 #         scores = get_scores(y_test,y_pred)
 #         scores['dataset'] = dataset
