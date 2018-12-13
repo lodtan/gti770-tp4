@@ -22,7 +22,8 @@ benchmark_results =  pd.DataFrame(columns=['Model', 'Features','accuracy','f1_ma
 predictions = []
 predictions_unlabeled = []
 
-for dataset in ['lpc','mfcc','derivatives']:
+#for dataset in ['lpc','mfcc','derivatives']:
+for dataset in ['lpc']:
 
     processor = AudioProcessor(dataset, path)
     X_train, X_test, Y_train, Y_test = processor.get_split_dataset(categorical=False)

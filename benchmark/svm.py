@@ -63,7 +63,7 @@ class SVM(object):
 
         X_train = self._apply_pca(X_train)
 
-        model_params = {**self.best_params[dataset], **{'cache_size': 2048}}
+        model_params = {**self.best_params[dataset], **{'cache_size': 2048,'probability':True}}
         clf = SVC(**model_params)
         print('[INFO] Training SVM Model for {0} dataset'.format(dataset))
         clf.fit(X_train,Y_train)
@@ -79,7 +79,7 @@ class SVM(object):
     def predict_svm_model(self,X_test,dataset):
         X_test = self._apply_pca(X_test)
         clf = self._load_svm_model(dataset)
-        y_predict = clf.predict(X_test)
+        y_predict = clf.predict_proba(X_test)
         return y_predict
 
     def _grid_search(self,model,model_params,param_grid,X_train, y_train,k=2):
