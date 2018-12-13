@@ -64,11 +64,14 @@ class Voting(object):
 
     def SVMdecision(self,categories, methode):
 
-        print("[INFO] openning SVM predictions...")
-        predict1 = pd.read_csv('ResultatsCSV\\SVM_Predictions_unlabeled.csv', delimiter=',', header=None).values[:, 0:24]
-        predict2 = pd.read_csv('ResultatsCSV\\SVM_Predictions_unlabeled.csv', delimiter=',', header=None).values[:, 25:49]
-        predict3 = pd.read_csv('ResultatsCSV\\SVM_Predictions_unlabeled.csv', delimiter=',', header=None).values[:, 50:74]
-        IDs = pd.read_csv('ResultatsCSV\\SVM_Predictions_unlabeled.csv', delimiter=',', header=None).values[:, 75]
+        print("[INFO] openning MLP predictions...")
+
+        predict = pd.read_csv('{0}/SVM_Predictions_unlabeled.csv'.format(self.path), delimiter=',', header=None)
+        predict1 = predict.values[:, 0:24]
+        predict2 = predict.values[:, 25:49]
+        predict3 = predict.values[:, 50:74]
+
+        IDs = predict.values[:, 75]
         if methode == 'sum':
             decision = np.add(predict1, np.add(predict2, predict3))
         if methode == 'max':
@@ -76,12 +79,39 @@ class Voting(object):
         if methode == 'min':
             decision = np.minimum(predict1, np.minimum(predict2, predict3))
         if methode in ('sum', 'max', 'min'):
-            with open('ResultatsCSV\\SVM_decision_unlabeled.csv', 'w', newline='') as csvfile:
+            with open('{0}/SVM_Predictions_voting_unlabeled.csv'.format(self.path), 'w', newline='') as csvfile:
+                print("[INFO] writting MLP decisions...")
+                filewriter = csv.writer(csvfile, delimiter=',')
+                filewriter.writerow(['id', 'genre'])
+                for i in range(len(IDs)):
+                    filewriter.writerow([IDs[i], categories[np.argmax(decision[i])]])
+        return decision
+
+    def SVMdecision_test(self,categories, methode):
+
+        print("[INFO] openning MLP predictions...")
+
+        predict = pd.read_csv('{0}/SVM_Predictions_test.csv'.format(self.path), delimiter=',', header=None)
+        predict1 = predict.values[:, 0:24]
+        predict2 = predict.values[:, 25:49]
+        predict3 = predict.values[:, 50:74]
+
+        IDs = predict.values[:, 75]
+        if methode == 'sum':
+            decision = np.add(predict1, np.add(predict2, predict3))
+        if methode == 'max':
+            decision = np.maximum(predict1, np.maximum(predict2, predict3))
+        if methode == 'min':
+            decision = np.minimum(predict1, np.minimum(predict2, predict3))
+        if methode in ('sum', 'max', 'min'):
+            with open('{0}/SVM_Predictions_test.csv'.format(self.path), 'w', newline='') as csvfile:
                 print("[INFO] writting SVM decisions...")
                 filewriter = csv.writer(csvfile, delimiter=',')
                 filewriter.writerow(['id', 'genre'])
                 for i in range(len(IDs)):
                     filewriter.writerow([IDs[i], categories[np.argmax(decision[i])]])
+        return decision
+
 
 
     def totalDecision(self,categories, methode):

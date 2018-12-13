@@ -25,7 +25,7 @@ class AudioProcessor(object):
         untagged_filenames = ['msd-jmirmfccs_test','msd-trh_test','msd-jmirderivatives_test','msd-mvd_test','msd-jmirmoments_test',
                      'msd-jmirlpc_test','msd-ssd_test','msd-rh_test_new','msd-jmirspectral_test','msd-marsyas_test_new']
 
-        datasets = ['mfccs','trh','derivatives','mvd','moments','lpc','ssd','rh','spectral','marsyas']
+        datasets = ['mfcc','trh','derivatives','mvd','moments','lpc','ssd','rh','spectral','marsyas']
 
         file_mappings = dict(zip(datasets,filenames))
 
